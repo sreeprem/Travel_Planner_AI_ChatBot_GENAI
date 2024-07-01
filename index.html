@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Planner AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #chat-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            width: 600px; /* Increase width */
+            height: 600px; /* Increase height */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #chat-box {
+            height: 400px; /* Increase height */
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding-right: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+
+        .user {
+            background-color: #d4e6f1;
+            text-align: right;
+        }
+
+        .bot {
+            background-color: #f0f0f0;
+        }
+
+        #user-input {
+            width: calc(100% - 60px);
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #send-button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+        <div id="chat-container">
+                <h2>Travel Planner AI Chat Bot</h2> 
+                <p>Ask me anything about your travel plans!</p> 
+                <div id="chat-box"></div>
+                <div style="display: flex;">
+                    <input type="text" id="user-input" placeholder="Type your message...">
+                    <button id="send-button" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+
+    <script>
+        function sendMessage() {
+            var userInput = document.getElementById('user-input').value;
+            appendMessage(userInput, 'user');
+
+            // Send user query to backend
+            fetch('/query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var recommendation = data.recommendation;
+                appendMessage(recommendation, 'bot');
+            })
+            .catch(error => console.error('Error:', error));
+
+            // Clear input field after sending message
+            document.getElementById('user-input').value = '';
+        }
+
+        function appendMessage(message, sender) {
+            var chatBox = document.getElementById('chat-box');
+            var messageElement = document.createElement('div');
+            messageElement.className = 'message ' + sender;
+            messageElement.innerHTML = message;
+            chatBox.appendChild(messageElement);
+
+            // Scroll chat box to bottom
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
